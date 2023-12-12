@@ -3,5 +3,6 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="lite_black">#272626</color>
+    <color name="gold">#FFD700</color>
 
 </resources>
