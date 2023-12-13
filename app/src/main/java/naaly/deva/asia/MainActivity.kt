@@ -17,6 +17,13 @@ class MainActivity : AppCompatActivity() {
         val isFirstTime = sharedPreferences.getBoolean("isFirstTime", true)
 
         if(isFirstTime){
+//            val editor = sharedPreferences.edit()
+//            editor?.putInt("dailyHour", 0)
+//            editor?.putInt("dailyMinute", 0)
+//            editor?.putInt("weeklyHour", 0)
+//            editor?.putInt("weeklyMinute", 0)
+//            editor?.putString("categoryTitle", "")
+//            editor?.apply()
             val intent = Intent(this, PromiseActivity::class.java)
             startActivity(intent)
             finish()
