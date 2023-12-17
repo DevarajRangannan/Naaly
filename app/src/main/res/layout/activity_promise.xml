@@ -19,7 +19,7 @@
         app:srcCompat="@drawable/promise_icon" />
 
     <TextView
-        android:id="@+id/promiseText"
+        android:id="@+id/itemText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="32dp"
@@ -29,7 +29,7 @@
         android:paddingTop="15sp"
         android:paddingEnd="20sp"
         android:paddingBottom="15sp"
-        android:text="I WILL BE LOYEL TO MY TIME"
+        android:text="I WILL BE LOYAL TO MY TIME"
         android:textColor="#FFD700"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"

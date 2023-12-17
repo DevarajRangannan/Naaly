@@ -5,19 +5,36 @@ import android.content.Context
 import android.content.SharedPreferences
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.widget.Adapter
+import android.widget.GridLayout
+import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 
 class CategoryActivity : AppCompatActivity() {
+
+    private lateinit var categoryTitleView: TextView
+    private lateinit var dailyHourView: TextView
+    private lateinit var dailyMinuteView: TextView
+    private lateinit var weeklyHourView: TextView
+    private lateinit var weeklyMinuteView: TextView
+    private lateinit var recyclerView: RecyclerView
+    private lateinit var adapter: naaly.deva.asia.Adapter
+    private lateinit var list: ArrayList<String>
 
     @SuppressLint("MissingInflatedId", "SetTextI18n")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_category)
-        val categoryTitleView = findViewById<TextView>(R.id.categoryTitleText)
-        val dailyHourView = findViewById<TextView>(R.id.categoryDailyHourText)
-        val dailyMinuteView = findViewById<TextView>(R.id.categoryDailyMinuteText)
-        val weeklyHourView = findViewById<TextView>(R.id.categoryWeeklyHourText)
-        val weeklyMinuteView = findViewById<TextView>(R.id.categoryWeeklyMinuteText)
+        categoryTitleView = findViewById(R.id.categoryTitleText)
+        dailyHourView = findViewById(R.id.categoryDailyHourText)
+        dailyMinuteView = findViewById(R.id.categoryDailyMinuteText)
+        weeklyHourView = findViewById(R.id.categoryWeeklyHourText)
+        weeklyMinuteView = findViewById(R.id.categoryWeeklyMinuteText)
+        recyclerView = findViewById(R.id.categoryRecylerView)
+
 
         val sharedPreferences = getSharedPreferences("naalyMain", Context.MODE_PRIVATE)
         val categoryTitle = sharedPreferences.getString("categoryTitle", "")
@@ -26,41 +43,56 @@ class CategoryActivity : AppCompatActivity() {
         val weeklyHour = sharedPreferences.getInt("weeklyHour", 0)
         val weeklyMinute = sharedPreferences.getInt("weeklyMinute", 0)
 
-        if(categoryTitle != ""){
+
+        list = ArrayList()
+//        list.add("Work")
+//        list.add("Exercise")
+//        list.add("Self Improvement")
+//        list.add("Health")
+//        list.add("Entertainment")
+
+
+        adapter = Adapter(list)
+        recyclerView.setHasFixedSize(true)
+        if(list.size == 0)
+            recyclerView.layoutManager = GridLayoutManager(this,1)
+        else
+            recyclerView.layoutManager = GridLayoutManager(this,2)
+
+        recyclerView.adapter = adapter
+
+        if (categoryTitle != "") {
             categoryTitleView.text = categoryTitle?.uppercase()
-        }
-        else{
+        } else {
             categoryTitleView.text = "PLEASE ADD CATEGORY"
         }
-//dailyHourView
-        if(dailyHour > 1){
+        //dailyHourView
+        if (dailyHour > 1) {
             dailyHourView.text = "$dailyHour Hours"
-        }
-        else{
+        } else {
             dailyHourView.text = "$dailyHour Hour"
         }
-//dailyMinuteView
-        if(dailyMinute > 1){
+        //dailyMinuteView
+        if (dailyMinute > 1) {
             dailyMinuteView.text = "$dailyMinute Minutes"
-        }
-        else{
+        } else {
             dailyMinuteView.text = "$dailyMinute Minute"
         }
 
-//weeklyHourView
-        if(weeklyHour > 1){
+        //weeklyHourView
+        if (weeklyHour > 1) {
             weeklyHourView.text = "$weeklyHour Hours"
-        }
-        else{
+        } else {
             weeklyHourView.text = "$weeklyHour Hour"
         }
-//weeklyMinuteView
-        if(weeklyMinute > 1){
+        //weeklyMinuteView
+        if (weeklyMinute > 1) {
             weeklyMinuteView.text = "$weeklyMinute Minutes"
-        }
-        else{
+        } else {
             weeklyMinuteView.text = "$weeklyMinute Minute"
         }
 
-}
+
+
+    }
 }
