@@ -1,53 +1,51 @@
+// Adapter.kt
 package naaly.deva.asia
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 
-class Adapter(private var list: ArrayList<String>) :
-    RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+interface OnItemClickListener {
+    fun onItemClick(categoryTitle: String)
+}
+
+class Adapter(
+    private var list: ArrayList<String>,
+    private val itemClickListener: OnItemClickListener
+) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     // View types
     private val VIEW_TYPE_ITEM = 0
     private val VIEW_TYPE_ADD_BUTTON = 1
 
     // ViewHolder for regular items
-    class ItemViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+    class ItemViewHolder(view: View, private val itemClickListener: OnItemClickListener) :
+        RecyclerView.ViewHolder(view) {
         var text: TextView = view.findViewById(R.id.itemText)
 
         init {
             itemView.setOnClickListener {
-                // Show a Toast when the item is clicked
-                val context = itemView.context
-                val message = text.text
-                Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+                // Notify the activity about the item click
+                itemClickListener.onItemClick(text.text.toString())
             }
         }
     }
 
     // ViewHolder for the "Add Category" button
     class AddButtonViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        private var addButton: TextView = view.findViewById(R.id.addCategoryBTN)
-
-        init {
-            // Set click listener for the button
-            addButton.setOnClickListener {
-                // Handle the button click event
-                // For example, you can add a new category to the list here
-            }
-        }
+        // You can customize this view as needed
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         return when (viewType) {
             VIEW_TYPE_ITEM -> {
-                val view =
-                    LayoutInflater.from(parent.context).inflate(R.layout.item_layout, parent, false)
-                ItemViewHolder(view)
+                val view = LayoutInflater.from(parent.context)
+                    .inflate(R.layout.item_layout, parent, false)
+                ItemViewHolder(view, itemClickListener)
             }
             VIEW_TYPE_ADD_BUTTON -> {
                 val view = LayoutInflater.from(parent.context)
