@@ -2,7 +2,9 @@
 package naaly.deva.asia
 
 import android.util.Log
+import android.view.ContextMenu
 import android.view.LayoutInflater
+import android.view.Menu
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
@@ -21,10 +23,14 @@ class Adapter(
     // View types
     private val VIEW_TYPE_ITEM = 0
     private val VIEW_TYPE_ADD_BUTTON = 1
+    var selectedPosition: Int = -1
+        private set
+
 
     // ViewHolder for regular items
     class ItemViewHolder(view: View, private val itemClickListener: OnItemClickListener) :
-        RecyclerView.ViewHolder(view) {
+        RecyclerView.ViewHolder(view), View.OnCreateContextMenuListener {
+
         var text: TextView = view.findViewById(R.id.itemText)
 
         init {
@@ -32,6 +38,18 @@ class Adapter(
                 // Notify the activity about the item click
                 itemClickListener.onItemClick(text.text.toString())
             }
+
+            // Register the view for context menu
+            itemView.setOnCreateContextMenuListener(this)
+        }
+
+        override fun onCreateContextMenu(
+            menu: ContextMenu?,
+            v: View?,
+            menuInfo: ContextMenu.ContextMenuInfo?
+        ) {
+            menu?.add(Menu.NONE, R.id.context_menu_edit, Menu.NONE, "Edit")
+            menu?.add(Menu.NONE, R.id.context_menu_delete, Menu.NONE, "Delete")
         }
     }
 
@@ -45,7 +63,12 @@ class Adapter(
             VIEW_TYPE_ITEM -> {
                 val view = LayoutInflater.from(parent.context)
                     .inflate(R.layout.item_layout, parent, false)
-                ItemViewHolder(view, itemClickListener)
+                ItemViewHolder(view, itemClickListener).apply {
+                    itemView.setOnLongClickListener {
+                        selectedPosition = adapterPosition
+                        false
+                    }
+                }
             }
             VIEW_TYPE_ADD_BUTTON -> {
                 val view = LayoutInflater.from(parent.context)

@@ -5,6 +5,8 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
+import android.view.MenuItem
 import android.view.View
 import android.widget.Button
 import android.widget.TextView
@@ -51,14 +53,17 @@ class CategoryActivity : AppCompatActivity(), OnItemClickListener {
         list.add("Health")
         list.add("Entertainment")
 
-        adapter = Adapter(list, this)
+//        adapter = Adapter(list, this)
         recyclerView.setHasFixedSize(true)
         if (list.size == 0)
             recyclerView.layoutManager = GridLayoutManager(this, 1)
         else
             recyclerView.layoutManager = GridLayoutManager(this, 2)
 
+//        recyclerView.adapter = adapter
+        adapter = Adapter(list, this)
         recyclerView.adapter = adapter
+        registerForContextMenu(recyclerView)
 
         if (categoryTitle != "") {
             categoryTitleView.text = categoryTitle?.uppercase()
@@ -101,6 +106,26 @@ class CategoryActivity : AppCompatActivity(), OnItemClickListener {
         proceedBTN.isEnabled = true
 
 
+    }
+
+    override fun onContextItemSelected(item: MenuItem): Boolean {
+        val position = adapter.selectedPosition
+
+        return when (item.itemId) {
+            R.id.context_menu_edit -> {
+                // Implement edit logic here using the position
+                Log.i("xxx1", "Edit item at position: $position")
+                Toast.makeText(this, "Edit item at position: $position", Toast.LENGTH_SHORT).show()
+                true
+            }
+            R.id.context_menu_delete -> {
+                // Implement delete logic here using the position
+                Log.i("xxx2", "Delete item at position: $position")
+                Toast.makeText(this, "Delete item at position: $position", Toast.LENGTH_SHORT).show()
+                true
+            }
+            else -> super.onContextItemSelected(item)
+        }
     }
 
     fun clickProceed(view: View) {
