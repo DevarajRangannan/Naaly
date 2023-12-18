@@ -191,6 +191,9 @@ class CategoryActivity : AppCompatActivity(), OnItemClickListener {
 
                         if (oldName != categoryName) {
 
+                            if (categoryTitle == oldName)
+                                categoryTitleView.text = updateET.text
+
                             list[position].categoryName = categoryName
 
                             adapter.notifyDataSetChanged()
@@ -287,6 +290,7 @@ class CategoryActivity : AppCompatActivity(), OnItemClickListener {
     }
 
     fun clickProceed(view: View) {
+        proceedBTN.isEnabled = false
         Toast.makeText(this, "ProceedBTN", Toast.LENGTH_SHORT).show()
     }
 
