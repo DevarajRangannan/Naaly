@@ -20,6 +20,7 @@
         android:paddingEnd="20sp"
         android:paddingBottom="20sp"
         android:text="ADD CATEGORY"
+        android:onClick="showAddCategoryPopup"
         android:maxLines="1"
         android:ellipsize="end"
         android:textAlignment="center"

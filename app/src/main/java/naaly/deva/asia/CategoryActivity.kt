@@ -2,13 +2,15 @@
 package naaly.deva.asia
 
 import android.annotation.SuppressLint
+import android.app.Dialog
 import android.content.Context
-import android.content.Intent
 import android.os.Bundle
+import android.util.DisplayMetrics
 import android.util.Log
 import android.view.MenuItem
 import android.view.View
 import android.widget.Button
+import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -25,7 +27,10 @@ class CategoryActivity : AppCompatActivity(), OnItemClickListener {
     private lateinit var recyclerView: RecyclerView
     private lateinit var proceedBTN: Button
     private lateinit var adapter: Adapter
-    private lateinit var list: ArrayList<String>
+    private lateinit var list: ArrayList<Category>
+    private lateinit var categoryRepository: CategoryRepository
+    private lateinit var dbHelper: DatabaseHelper
+
 
     @SuppressLint("SetTextI18n")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -45,13 +50,21 @@ class CategoryActivity : AppCompatActivity(), OnItemClickListener {
         val dailyMinute = sharedPreferences.getInt("dailyMinute", 0)
         val weeklyHour = sharedPreferences.getInt("weeklyHour", 0)
         val weeklyMinute = sharedPreferences.getInt("weeklyMinute", 0)
+        dbHelper = DatabaseHelper(this)
 
         list = ArrayList()
-        list.add("Work")
-        list.add("Exercise")
-        list.add("Self Improvement")
-        list.add("Health")
-        list.add("Entertainment")
+
+        categoryRepository = CategoryRepository(this)
+
+        // Use categoryRepository to get category names and populate your list
+        val categoryTableName = "categories" // replace with the actual table name
+        list = categoryRepository.getCategoryNames(categoryTableName) as ArrayList<Category>
+
+//        list.add("Work")
+//        list.add("Exercise")
+//        list.add("Self Improvement")
+//        list.add("Health")
+//        list.add("Entertainment")
 
 //        adapter = Adapter(list, this)
         recyclerView.setHasFixedSize(true)
@@ -108,22 +121,123 @@ class CategoryActivity : AppCompatActivity(), OnItemClickListener {
 
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     override fun onContextItemSelected(item: MenuItem): Boolean {
         val position = adapter.selectedPosition
 
         return when (item.itemId) {
             R.id.context_menu_edit -> {
-                // Implement edit logic here using the position
-                Log.i("xxx1", "Edit item at position: $position")
-                Toast.makeText(this, "Edit item at position: $position", Toast.LENGTH_SHORT).show()
+
+                val dialog = Dialog(this)
+
+                // Set the content view from the layout
+                dialog.setContentView(R.layout.popup_update_category)
+
+                // Calculate the width of the dialog based on the screen width
+                val displayMetrics = DisplayMetrics()
+                windowManager.defaultDisplay.getMetrics(displayMetrics)
+                val dialogWidth = (displayMetrics.widthPixels * 0.9).toInt()
+
+                // Set the width of the dialog
+                val window = dialog.window
+                val layoutParams = window?.attributes
+                layoutParams?.width = dialogWidth
+                window?.attributes = layoutParams
+
+                // Find your views in the layout
+                val updateET: EditText = dialog.findViewById(R.id.UpdateEditTextCategory)
+                val updateBTN: Button = dialog.findViewById(R.id.buttonUpdateCategory)
+                val oldName: String = list[position].categoryName
+                updateET.setText(oldName.replace("_", " ").capitalizeWords())
+
+                // Set click listener for the "Update Category" button
+                updateBTN.setOnClickListener {
+                    val categoryName = updateET.text.toString().trim().lowercase().replace(" ", "_")
+                    if (categoryName.isNotEmpty()) {
+
+                        if (oldName != categoryName) {
+
+                            list[position].categoryName = categoryName
+
+                            adapter.notifyDataSetChanged()
+
+                            // update data to the category table
+                            categoryRepository.updateCategory(oldName, categoryName)
+                        }
+
+                        dialog.dismiss()
+
+                    } else {
+                        Toast.makeText(this, "Please enter a category name", Toast.LENGTH_SHORT)
+                            .show()
+
+
+                    }
+
+                }
+
+                // Show the dialog
+                dialog.show()
                 true
             }
+
             R.id.context_menu_delete -> {
-                // Implement delete logic here using the position
-                Log.i("xxx2", "Delete item at position: $position")
-                Toast.makeText(this, "Delete item at position: $position", Toast.LENGTH_SHORT).show()
+                val dialog = Dialog(this)
+
+                // Set the content view from the layout
+                dialog.setContentView(R.layout.popup_delete_category)
+
+                // Calculate the width of the dialog based on the screen width
+                val displayMetrics = DisplayMetrics()
+                windowManager.defaultDisplay.getMetrics(displayMetrics)
+                val dialogWidth = (displayMetrics.widthPixels * 0.9).toInt()
+
+                // Set the width of the dialog
+                val window = dialog.window
+                val layoutParams = window?.attributes
+                layoutParams?.width = dialogWidth
+                window?.attributes = layoutParams
+
+                // Find your views in the layout
+                val DeleteCategoryTitleTV: TextView = dialog.findViewById(R.id.deleteCategoryTV)
+                val DeleteCategoryBTN: TextView = dialog.findViewById(R.id.confirmDeleteCategoryBTN)
+                val CancelCategoryTitleBTN: TextView =
+                    dialog.findViewById(R.id.cancelDeleteCategoryBTN)
+
+                val DeleteCategoryTitle: String = list[position].categoryName
+                DeleteCategoryTitleTV.setText(DeleteCategoryTitle.replace("_", " ").capitalizeWords())
+
+                // Set click listener for the "Update Category" button
+                DeleteCategoryBTN.setOnClickListener {
+
+                    list.removeIf { it.categoryName == DeleteCategoryTitle }
+
+                    if (list.size == 0) {
+                        recyclerView.layoutManager = GridLayoutManager(this, 1)
+                    }
+
+                    adapter.notifyDataSetChanged()
+
+                    // update data to the category table
+                    categoryRepository.deleteCategory(DeleteCategoryTitle)
+                    dbHelper.deleteCategoryTable(DeleteCategoryTitle)
+
+                    dialog.dismiss()
+
+                }
+
+                CancelCategoryTitleBTN.setOnClickListener {
+
+                    dialog.dismiss()
+
+                }
+
+
+                // Show the dialog
+                dialog.show()
                 true
             }
+
             else -> super.onContextItemSelected(item)
         }
     }
@@ -131,4 +245,70 @@ class CategoryActivity : AppCompatActivity(), OnItemClickListener {
     fun clickProceed(view: View) {
         Toast.makeText(this, "ProceedBTN", Toast.LENGTH_SHORT).show()
     }
+
+    @SuppressLint("NotifyDataSetChanged")
+    fun showAddCategoryPopup(view: View) {
+        val dialog = Dialog(this)
+
+        // Set the content view from the layout
+        dialog.setContentView(R.layout.popup_add_category)
+
+        // Calculate the width of the dialog based on the screen width
+        val displayMetrics = DisplayMetrics()
+        windowManager.defaultDisplay.getMetrics(displayMetrics)
+        val dialogWidth = (displayMetrics.widthPixels * 0.9).toInt()
+
+        // Set the width of the dialog
+        val window = dialog.window
+        val layoutParams = window?.attributes
+        layoutParams?.width = dialogWidth
+        window?.attributes = layoutParams
+
+        // Find your views in the layout
+        val editTextCategory: EditText = dialog.findViewById(R.id.EditTextCategory)
+        val buttonAddCategory: Button = dialog.findViewById(R.id.buttonAddCategory)
+
+        // Set click listener for the "Add Category" button
+        buttonAddCategory.setOnClickListener {
+            val categoryName = editTextCategory.text.toString().trim().lowercase().replace(" ", "_")
+            if (categoryName.isNotEmpty()) {
+                // Create a new table for the category
+                val categoryExists = list.any { it.categoryName == categoryName }
+                if (!categoryExists) {
+                    if (list.size == 0) {
+                        recyclerView.layoutManager = GridLayoutManager(this, 2)
+                    }
+
+                    val categoryItem = Category(categoryName, 0)
+                    list.add(categoryItem)
+                    adapter.notifyDataSetChanged()
+
+                    dbHelper.createCategoryTable(categoryName)
+
+                    // Add data to the category table
+                    categoryRepository.insertCategory(categoryName)
+
+                    // Notify the adapter of the dataset changes
+
+                    // Close the popup
+                    dialog.dismiss()
+                } else {
+                    Toast.makeText(this, "Category already exist", Toast.LENGTH_SHORT).show()
+                }
+            } else {
+                Toast.makeText(this, "Please enter a category name", Toast.LENGTH_SHORT).show()
+
+
+            }
+
+        }
+
+        // Show the dialog
+        dialog.show()
+    }
+
+}
+
+fun String.capitalizeWords(): String {
+    return this.split(" ").joinToString(" ") { it.capitalize() }
 }

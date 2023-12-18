@@ -1,14 +1,12 @@
 // Adapter.kt
 package naaly.deva.asia
 
-import android.util.Log
 import android.view.ContextMenu
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 
 interface OnItemClickListener {
@@ -16,7 +14,7 @@ interface OnItemClickListener {
 }
 
 class Adapter(
-    private var list: ArrayList<String>,
+    private var list: ArrayList<Category>,
     private val itemClickListener: OnItemClickListener
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
@@ -83,7 +81,7 @@ class Adapter(
         when (holder.itemViewType) {
             VIEW_TYPE_ITEM -> {
                 val itemHolder = holder as ItemViewHolder
-                itemHolder.text.text = list[position]
+                itemHolder.text.text = list[position].categoryName.replace("_"," ").capitalizeWords()
             }
             VIEW_TYPE_ADD_BUTTON -> {
                 // Handle the button view as needed
@@ -103,5 +101,9 @@ class Adapter(
         } else {
             VIEW_TYPE_ADD_BUTTON
         }
+    }
+
+    fun String.capitalizeWords(): String {
+        return this.split(" ").joinToString(" ") { it.capitalize() }
     }
 }
