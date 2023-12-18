@@ -10,7 +10,14 @@ import naaly.deva.asia.DatabaseHelper.Companion.COLUMN_DAILY_MINUTE
 import naaly.deva.asia.DatabaseHelper.Companion.COLUMN_WEEKLY_HOUR
 import naaly.deva.asia.DatabaseHelper.Companion.COLUMN_WEEKLY_MINUTE
 
-data class Category(var categoryName: String, val countOfOpen: Int)
+data class Category(
+    var categoryName: String,
+    val dailyHour: Int,
+    val dailyMinute: Int,
+    val weeklyHour: Int,
+    val weeklyMinute: Int,
+    val countOfOpen: Int
+    )
 
 
 class CategoryRepository(private val context: Context) {
@@ -22,12 +29,16 @@ class CategoryRepository(private val context: Context) {
         val categoryNames = mutableListOf<Category>()
         val db = dbHelper.readableDatabase
 
-        val cursor = db.rawQuery("SELECT categoryName, countOfOpen FROM $categoryTableName", null)
+        val cursor = db.rawQuery("SELECT * FROM $categoryTableName", null)
         cursor.use {
             while (it.moveToNext()) {
-                val categoryName = it.getString(it.getColumnIndex("categoryName"))
-                val countOfOpen = it.getInt(it.getColumnIndex("countOfOpen"))
-                val category = Category(categoryName, countOfOpen)
+                val categoryName = it.getString(it.getColumnIndex(COLUMN_CATEGORY_NAME))
+                val dailyHour = it.getInt(it.getColumnIndex(COLUMN_DAILY_HOUR))
+                val dailyMinute = it.getInt(it.getColumnIndex(COLUMN_DAILY_MINUTE))
+                val weeklyHour = it.getInt(it.getColumnIndex(COLUMN_WEEKLY_HOUR))
+                val weeklyMinute = it.getInt(it.getColumnIndex(COLUMN_WEEKLY_MINUTE))
+                val countOfOpen = it.getInt(it.getColumnIndex(COLUMN_COUNT_OF_OPEN))
+                val category = Category(categoryName, dailyHour, dailyMinute, weeklyHour, weeklyMinute, countOfOpen)
                 categoryNames.add(category)
 
             }

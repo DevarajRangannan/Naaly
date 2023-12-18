@@ -66,7 +66,9 @@ class CategoryActivity : AppCompatActivity(), OnItemClickListener {
 
         // Use categoryRepository to get category names and populate your list
         val categoryTableName = "categories" // replace with the actual table name
+
         list = categoryRepository.getCategoryNames(categoryTableName) as ArrayList<Category>
+        list = list.sortedByDescending { it.categoryName  }.toMutableList() as ArrayList<Category>
 
 //        list.add("Work")
 //        list.add("Exercise")
@@ -125,9 +127,27 @@ class CategoryActivity : AppCompatActivity(), OnItemClickListener {
     }
 
     // Implement the onItemClick method from the OnItemClickListener interface
-    override fun onItemClick(categoryTitle: String) {
+    override fun onItemClick(selectedCategoryTitle: String) {
         // Update the categoryTitleView when an item is clicked
-        categoryTitleView.text = categoryTitle.uppercase()
+        val selectedCategory = list.find { it.categoryName == selectedCategoryTitle.replace(" ", "_").lowercase() }
+
+        if (selectedCategory != null) {
+            categoryTitle = selectedCategory.categoryName.replace("_", " ")
+        }
+        if (selectedCategory != null) {
+            dailyHour = selectedCategory.dailyHour
+        }
+        if (selectedCategory != null) {
+            dailyMinute = selectedCategory.dailyMinute
+        }
+        if (selectedCategory != null) {
+            weeklyHour = selectedCategory.weeklyHour
+        }
+        if (selectedCategory != null) {
+            weeklyMinute = selectedCategory.weeklyMinute
+        }
+
+        mainDisplay()
         proceedBTN.alpha = 1f
         proceedBTN.isEnabled = true
 
@@ -165,6 +185,7 @@ class CategoryActivity : AppCompatActivity(), OnItemClickListener {
 
                 // Set click listener for the "Update Category" button
                 updateBTN.setOnClickListener {
+                    updateBTN.isEnabled = false
                     val categoryName = updateET.text.toString().trim().lowercase().replace(" ", "_")
                     if (categoryName.isNotEmpty()) {
 
@@ -181,6 +202,8 @@ class CategoryActivity : AppCompatActivity(), OnItemClickListener {
                         dialog.dismiss()
 
                     } else {
+                        updateBTN.isEnabled = true
+
                         Toast.makeText(this, "Please enter a category name", Toast.LENGTH_SHORT)
                             .show()
                     }
@@ -300,7 +323,7 @@ class CategoryActivity : AppCompatActivity(), OnItemClickListener {
                         recyclerView.layoutManager = GridLayoutManager(this, 2)
                     }
 
-                    val categoryItem = Category(categoryName, 0)
+                    val categoryItem = Category(categoryName, 0, 0, 0, 0, 0, )
                     list.add(categoryItem)
                     adapter.notifyDataSetChanged()
 

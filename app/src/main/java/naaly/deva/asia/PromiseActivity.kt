@@ -20,6 +20,7 @@ class PromiseActivity : AppCompatActivity() {
     }
 
     fun clickPromise(view: View) {
+        promiseText?.isEnabled = false
         val editor = sharedPreferences?.edit()
         val intent = Intent(this, CategoryActivity::class.java)
 
