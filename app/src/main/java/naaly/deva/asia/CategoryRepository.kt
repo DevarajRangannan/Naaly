@@ -3,6 +3,12 @@ package naaly.deva.asia
 import android.annotation.SuppressLint
 import android.content.ContentValues
 import android.content.Context
+import naaly.deva.asia.DatabaseHelper.Companion.COLUMN_CATEGORY_NAME
+import naaly.deva.asia.DatabaseHelper.Companion.COLUMN_COUNT_OF_OPEN
+import naaly.deva.asia.DatabaseHelper.Companion.COLUMN_DAILY_HOUR
+import naaly.deva.asia.DatabaseHelper.Companion.COLUMN_DAILY_MINUTE
+import naaly.deva.asia.DatabaseHelper.Companion.COLUMN_WEEKLY_HOUR
+import naaly.deva.asia.DatabaseHelper.Companion.COLUMN_WEEKLY_MINUTE
 
 data class Category(var categoryName: String, val countOfOpen: Int)
 
@@ -35,7 +41,13 @@ class CategoryRepository(private val context: Context) {
     fun insertCategory(categoryName: String) {
         val db = dbHelper.writableDatabase
         val values = ContentValues().apply {
-            put("categoryName", categoryName)
+            put(COLUMN_CATEGORY_NAME, categoryName)
+            put(COLUMN_DAILY_HOUR, 0)
+            put(COLUMN_DAILY_MINUTE, 0)
+            put(COLUMN_WEEKLY_HOUR, 0)
+            put(COLUMN_WEEKLY_MINUTE, 0)
+            put(COLUMN_COUNT_OF_OPEN, 0)
+
         }
         db.insert("categories", null, values)
         db.close()

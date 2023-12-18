@@ -4,6 +4,7 @@ package naaly.deva.asia
 import android.annotation.SuppressLint
 import android.app.Dialog
 import android.content.Context
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.util.DisplayMetrics
 import android.util.Log
@@ -31,6 +32,12 @@ class CategoryActivity : AppCompatActivity(), OnItemClickListener {
     private lateinit var categoryRepository: CategoryRepository
     private lateinit var dbHelper: DatabaseHelper
 
+    private lateinit var sharedPreferences: SharedPreferences
+    private lateinit var categoryTitle: String
+    private var dailyHour: Int = 0
+    private var dailyMinute: Int = 0
+    private var weeklyHour: Int = 0
+    private var weeklyMinute: Int = 0
 
     @SuppressLint("SetTextI18n")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -44,12 +51,13 @@ class CategoryActivity : AppCompatActivity(), OnItemClickListener {
         recyclerView = findViewById(R.id.categoryRecylerView)
         proceedBTN = findViewById(R.id.proceedBTN)
 
-        val sharedPreferences = getSharedPreferences("naalyMain", Context.MODE_PRIVATE)
-        val categoryTitle = sharedPreferences.getString("categoryTitle", "")
-        val dailyHour = sharedPreferences.getInt("dailyHour", 0)
-        val dailyMinute = sharedPreferences.getInt("dailyMinute", 0)
-        val weeklyHour = sharedPreferences.getInt("weeklyHour", 0)
-        val weeklyMinute = sharedPreferences.getInt("weeklyMinute", 0)
+        sharedPreferences = getSharedPreferences("naalyMain", Context.MODE_PRIVATE)
+        categoryTitle = sharedPreferences.getString("categoryTitle", "").toString()
+        dailyHour = sharedPreferences.getInt("dailyHour", 0)
+        dailyMinute = sharedPreferences.getInt("dailyMinute", 0)
+        weeklyHour = sharedPreferences.getInt("weeklyHour", 0)
+        weeklyMinute = sharedPreferences.getInt("weeklyMinute", 0)
+
         dbHelper = DatabaseHelper(this)
 
         list = ArrayList()
@@ -78,8 +86,13 @@ class CategoryActivity : AppCompatActivity(), OnItemClickListener {
         recyclerView.adapter = adapter
         registerForContextMenu(recyclerView)
 
+        mainDisplay()
+    }
+
+    @SuppressLint("SetTextI18n")
+    private fun mainDisplay(){
         if (categoryTitle != "") {
-            categoryTitleView.text = categoryTitle?.uppercase()
+            categoryTitleView.text = categoryTitle.uppercase()
         } else {
             categoryTitleView.text = "PLEASE ADD CATEGORY"
             proceedBTN.alpha = 0.3f
@@ -170,8 +183,6 @@ class CategoryActivity : AppCompatActivity(), OnItemClickListener {
                     } else {
                         Toast.makeText(this, "Please enter a category name", Toast.LENGTH_SHORT)
                             .show()
-
-
                     }
 
                 }
@@ -216,6 +227,16 @@ class CategoryActivity : AppCompatActivity(), OnItemClickListener {
                         recyclerView.layoutManager = GridLayoutManager(this, 1)
                     }
 
+
+                    if(categoryTitleView.text == DeleteCategoryTitle.replace("_", " ").uppercase()){
+                        categoryTitle = ""
+                        dailyHour = 0
+                        dailyMinute = 0
+                        weeklyHour = 0
+                        weeklyMinute = 0
+                        mainDisplay()
+
+                    }
                     adapter.notifyDataSetChanged()
 
                     // update data to the category table
