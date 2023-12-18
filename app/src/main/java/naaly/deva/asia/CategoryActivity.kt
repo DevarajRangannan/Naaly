@@ -68,7 +68,7 @@ class CategoryActivity : AppCompatActivity(), OnItemClickListener {
         val categoryTableName = "categories" // replace with the actual table name
 
         list = categoryRepository.getCategoryNames(categoryTableName) as ArrayList<Category>
-        list = list.sortedByDescending { it.categoryName  }.toMutableList() as ArrayList<Category>
+        list = list.sortedByDescending { it.countOfOpen  }.toMutableList() as ArrayList<Category>
 
 //        list.add("Work")
 //        list.add("Exercise")
@@ -190,9 +190,9 @@ class CategoryActivity : AppCompatActivity(), OnItemClickListener {
                     if (categoryName.isNotEmpty()) {
 
                         if (oldName != categoryName) {
-
-                            if (categoryTitle == oldName)
-                                categoryTitleView.text = updateET.text
+                            Log.i("xxx", "onContextItemSelected: $categoryTitle :: $oldName")
+                            if (categoryTitle == oldName.replace("_", " "))
+                                categoryTitleView.text = updateET.text.toString().uppercase()
 
                             list[position].categoryName = categoryName
 
