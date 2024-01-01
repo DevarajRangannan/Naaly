@@ -30,4 +30,6 @@ class PromiseActivity : AppCompatActivity() {
         startActivity(intent)
         finish()
     }
+
+
 }

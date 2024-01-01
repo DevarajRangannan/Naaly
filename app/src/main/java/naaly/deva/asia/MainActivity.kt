@@ -15,24 +15,25 @@ class MainActivity : AppCompatActivity() {
 
         val sharedPreferences = getSharedPreferences("naalyMain", Context.MODE_PRIVATE)
         val isFirstTime = sharedPreferences.getBoolean("isFirstTime", true)
+        val showCategory = sharedPreferences.getBoolean("showCategory", true)
+
+        var intent: Intent? = null
 
         if(isFirstTime){
-//            val editor = sharedPreferences.edit()
-//            editor?.putInt("dailyHour", 0)
-//            editor?.putInt("dailyMinute", 0)
-//            editor?.putInt("weeklyHour", 0)
-//            editor?.putInt("weeklyMinute", 0)
-//            editor?.putString("categoryTitle", "")
-//            editor?.apply()
-            val intent = Intent(this, PromiseActivity::class.java)
-            startActivity(intent)
-            finish()
+            intent = Intent(this, PromiseActivity::class.java)
         }
         else{
-            val intent = Intent(this, CategoryActivity::class.java)
-            startActivity(intent)
-            finish()
+
+            if(showCategory){
+                intent = Intent(this, CategoryActivity::class.java)
+            }
+            else{
+                intent = Intent(this, HomeActivity::class.java)
+            }
         }
+
+        startActivity(intent)
+        finish()
 
     }
 }

@@ -4,6 +4,7 @@ package naaly.deva.asia
 import android.annotation.SuppressLint
 import android.app.Dialog
 import android.content.Context
+import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
 import android.util.DisplayMetrics
@@ -38,6 +39,9 @@ class CategoryActivity : AppCompatActivity(), OnItemClickListener {
     private var dailyMinute: Int = 0
     private var weeklyHour: Int = 0
     private var weeklyMinute: Int = 0
+
+    private var currentCategoryDeleted = false
+    private var isCurrentCategoryEdited = false
 
     @SuppressLint("SetTextI18n")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -93,10 +97,15 @@ class CategoryActivity : AppCompatActivity(), OnItemClickListener {
 
     @SuppressLint("SetTextI18n")
     private fun mainDisplay(){
+        Log.i("mainDisplay", "mainDisplay: "+list.size.toString())
         if (categoryTitle != "") {
             categoryTitleView.text = categoryTitle.uppercase()
         } else {
-            categoryTitleView.text = "PLEASE ADD CATEGORY"
+            if(list.size > 0)
+                categoryTitleView.text = "PLEASE SELECT CATEGORY"
+            else
+                categoryTitleView.text = "PLEASE ADD CATEGORY"
+
             proceedBTN.alpha = 0.3f
             proceedBTN.isEnabled = false
         }
@@ -154,7 +163,7 @@ class CategoryActivity : AppCompatActivity(), OnItemClickListener {
 
     }
 
-    @SuppressLint("NotifyDataSetChanged")
+    @SuppressLint("NotifyDataSetChanged", "CommitPrefEdits")
     override fun onContextItemSelected(item: MenuItem): Boolean {
         val position = adapter.selectedPosition
 
@@ -188,9 +197,9 @@ class CategoryActivity : AppCompatActivity(), OnItemClickListener {
                     updateBTN.isEnabled = false
                     val categoryName = updateET.text.toString().trim().lowercase().replace(" ", "_")
                     if (categoryName.isNotEmpty()) {
+                        Log.i("onItemUpdated", "onItemUpdated: ${sharedPreferences.getString("categoryTitle", "").toString()}:: ${oldName.replace("_", " ")} :: $categoryName")
 
                         if (oldName != categoryName) {
-                            Log.i("xxx", "onContextItemSelected: $categoryTitle :: $oldName")
                             if (categoryTitle == oldName.replace("_", " "))
                                 categoryTitleView.text = updateET.text.toString().uppercase()
 
@@ -200,8 +209,15 @@ class CategoryActivity : AppCompatActivity(), OnItemClickListener {
 
                             // update data to the category table
                             categoryRepository.updateCategory(oldName, categoryName)
-                        }
 
+                            if(sharedPreferences.getString("categoryTitle", "").toString() == oldName.replace("_", " ")){
+                                val editor = sharedPreferences.edit()
+                                editor.putString("categoryTitle",  categoryName.replace("_", " "))
+                                isCurrentCategoryEdited = true
+                                categoryTitle = categoryName.replace("_", " ")
+                                editor.apply()
+                            }
+                        }
                         dialog.dismiss()
 
                     } else {
@@ -260,7 +276,16 @@ class CategoryActivity : AppCompatActivity(), OnItemClickListener {
                         dailyMinute = 0
                         weeklyHour = 0
                         weeklyMinute = 0
-                        mainDisplay()
+
+                        Log.i("DeleteCategoryBTNDeleteCategoryBTN", "onContextItemSelected: " + sharedPreferences.getString("categoryTitle", "").toString() + " "+DeleteCategoryTitle)
+                        if(sharedPreferences.getString("categoryTitle", "").toString() == DeleteCategoryTitle){
+                            val editor = sharedPreferences.edit()
+
+                            currentCategoryDeleted = true
+                            editor?.putBoolean("showCategory", true)
+                            editor?.putString("categoryTitle", "")
+                            editor.apply()
+                        }
 
                     }
                     adapter.notifyDataSetChanged()
@@ -268,6 +293,7 @@ class CategoryActivity : AppCompatActivity(), OnItemClickListener {
                     // update data to the category table
                     categoryRepository.deleteCategory(DeleteCategoryTitle)
                     dbHelper.deleteCategoryTable(DeleteCategoryTitle)
+                    mainDisplay()
 
                     dialog.dismiss()
 
@@ -287,11 +313,52 @@ class CategoryActivity : AppCompatActivity(), OnItemClickListener {
 
             else -> super.onContextItemSelected(item)
         }
+
     }
 
+    @Deprecated("Deprecated in Java")
+    override fun onBackPressed() {
+        Log.i("onBackPressed", "onBackPressed: 1")
+        // Check your condition here
+
+        if(isCurrentCategoryEdited){
+            Log.i("onBackPressed", "onBackPressed: 4")
+            val intent = Intent(this, HomeActivity::class.java)
+            startActivity(intent)
+            finishAffinity()
+        }
+        else if (currentCategoryDeleted) {
+            Log.i("onBackPressed", "onBackPressed: 2")
+
+            finishAffinity()
+        } else {
+            // Call super.onBackPressed() to allow the default back press behavior
+            Log.i("onBackPressed", "onBackPressed: 3")
+
+            super.onBackPressed()
+        }
+    }
+
+    @SuppressLint("CommitPrefEdits")
     fun clickProceed(view: View) {
         proceedBTN.isEnabled = false
-        Toast.makeText(this, "ProceedBTN", Toast.LENGTH_SHORT).show()
+        Log.i("xxxy", "onContextItemSelected: ${categoryTitle}")
+
+        val editor = sharedPreferences.edit()
+
+        val intent = Intent(this, HomeActivity::class.java)
+
+        editor?.putString("categoryTitle", categoryTitle)
+        editor?.putInt("dailyHour", dailyHour)
+        editor?.putInt("dailyMinute", dailyMinute)
+        editor?.putInt("weeklyHour", weeklyHour)
+        editor?.putInt("weeklyMinute", weeklyMinute)
+        editor?.putBoolean("showCategory", false)
+        editor?.apply()
+
+        startActivity(intent)
+        finishAffinity()
+
     }
 
     @SuppressLint("NotifyDataSetChanged")
@@ -339,6 +406,8 @@ class CategoryActivity : AppCompatActivity(), OnItemClickListener {
                     // Notify the adapter of the dataset changes
 
                     // Close the popup
+                    mainDisplay()
+
                     dialog.dismiss()
                 } else {
                     Toast.makeText(this, "Category already exist", Toast.LENGTH_SHORT).show()
