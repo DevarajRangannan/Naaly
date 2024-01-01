@@ -90,5 +90,14 @@ class CategoryRepository(private val context: Context) {
         db.close()
     }
 
+    fun updateCountOfOpen(categoryName: String) {
+        val db = dbHelper.writableDatabase
 
+        // Increment countOfOpen by 1
+        val incrementCountQuery = "UPDATE categories SET $COLUMN_COUNT_OF_OPEN = $COLUMN_COUNT_OF_OPEN + 1 WHERE $COLUMN_CATEGORY_NAME = ?"
+        db.execSQL(incrementCountQuery, arrayOf(categoryName))
+
+
+        db.close()
+    }
 }

@@ -74,13 +74,6 @@ class CategoryActivity : AppCompatActivity(), OnItemClickListener {
         list = categoryRepository.getCategoryNames(categoryTableName) as ArrayList<Category>
         list = list.sortedByDescending { it.countOfOpen  }.toMutableList() as ArrayList<Category>
 
-//        list.add("Work")
-//        list.add("Exercise")
-//        list.add("Self Improvement")
-//        list.add("Health")
-//        list.add("Entertainment")
-
-//        adapter = Adapter(list, this)
         recyclerView.setHasFixedSize(true)
         if (list.size == 0)
             recyclerView.layoutManager = GridLayoutManager(this, 1)
@@ -355,6 +348,8 @@ class CategoryActivity : AppCompatActivity(), OnItemClickListener {
         editor?.putInt("weeklyMinute", weeklyMinute)
         editor?.putBoolean("showCategory", false)
         editor?.apply()
+
+        categoryRepository.updateCountOfOpen(categoryTitle.replace(" ","_"))
 
         startActivity(intent)
         finishAffinity()
