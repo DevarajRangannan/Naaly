@@ -18,6 +18,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import java.util.Date
 
 class CategoryActivity : AppCompatActivity(), OnItemClickListener {
 
@@ -71,8 +72,8 @@ class CategoryActivity : AppCompatActivity(), OnItemClickListener {
         // Use categoryRepository to get category names and populate your list
         val categoryTableName = "categories" // replace with the actual table name
 
-        list = categoryRepository.getCategoryNames(categoryTableName) as ArrayList<Category>
-        list = list.sortedByDescending { it.countOfOpen  }.toMutableList() as ArrayList<Category>
+        list = categoryRepository.getCategoryByNames(categoryTableName) as ArrayList<Category>
+        list = list.sortedByDescending { it.recentOpen  }.toMutableList() as ArrayList<Category>
 
         recyclerView.setHasFixedSize(true)
         if (list.size == 0)
@@ -349,7 +350,7 @@ class CategoryActivity : AppCompatActivity(), OnItemClickListener {
         editor?.putBoolean("showCategory", false)
         editor?.apply()
 
-        categoryRepository.updateCountOfOpen(categoryTitle.replace(" ","_"))
+        categoryRepository.updateRecentOpenDateTime(categoryTitle.replace(" ","_"))
 
         startActivity(intent)
         finishAffinity()
@@ -388,19 +389,16 @@ class CategoryActivity : AppCompatActivity(), OnItemClickListener {
                     if (list.size == 0) {
                         recyclerView.layoutManager = GridLayoutManager(this, 2)
                     }
-
-                    val categoryItem = Category(categoryName, 0, 0, 0, 0, 0, )
+                    val currentDateTime = Date().time
+                    Log.i("showAddCategoryPopup", "showAddCategoryPopup: $currentDateTime")
+                    val categoryItem = Category(categoryName, 0, 0, 0, 0, currentDateTime)
                     list.add(categoryItem)
                     adapter.notifyDataSetChanged()
 
                     dbHelper.createCategoryTable(categoryName)
 
-                    // Add data to the category table
                     categoryRepository.insertCategory(categoryName)
 
-                    // Notify the adapter of the dataset changes
-
-                    // Close the popup
                     mainDisplay()
 
                     dialog.dismiss()

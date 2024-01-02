@@ -3,12 +3,18 @@ package naaly.deva.asia
 import android.annotation.SuppressLint
 import android.content.ContentValues
 import android.content.Context
+import android.util.Log
 import naaly.deva.asia.DatabaseHelper.Companion.COLUMN_CATEGORY_NAME
-import naaly.deva.asia.DatabaseHelper.Companion.COLUMN_COUNT_OF_OPEN
 import naaly.deva.asia.DatabaseHelper.Companion.COLUMN_DAILY_HOUR
 import naaly.deva.asia.DatabaseHelper.Companion.COLUMN_DAILY_MINUTE
+import naaly.deva.asia.DatabaseHelper.Companion.COLUMN_RECENT_OPEN
 import naaly.deva.asia.DatabaseHelper.Companion.COLUMN_WEEKLY_HOUR
 import naaly.deva.asia.DatabaseHelper.Companion.COLUMN_WEEKLY_MINUTE
+import java.text.DateFormat
+import java.text.SimpleDateFormat
+import java.util.Calendar
+import java.util.Date
+import java.util.Locale
 
 data class Category(
     var categoryName: String,
@@ -16,7 +22,7 @@ data class Category(
     val dailyMinute: Int,
     val weeklyHour: Int,
     val weeklyMinute: Int,
-    val countOfOpen: Int
+    val recentOpen: Long
     )
 
 
@@ -25,7 +31,7 @@ class CategoryRepository(private val context: Context) {
     private val dbHelper = DatabaseHelper(context)
 
     @SuppressLint("Range")
-    fun getCategoryNames(categoryTableName: String): List<Category> {
+    fun getCategoryByNames(categoryTableName: String): List<Category> {
         val categoryNames = mutableListOf<Category>()
         val db = dbHelper.readableDatabase
 
@@ -37,8 +43,9 @@ class CategoryRepository(private val context: Context) {
                 val dailyMinute = it.getInt(it.getColumnIndex(COLUMN_DAILY_MINUTE))
                 val weeklyHour = it.getInt(it.getColumnIndex(COLUMN_WEEKLY_HOUR))
                 val weeklyMinute = it.getInt(it.getColumnIndex(COLUMN_WEEKLY_MINUTE))
-                val countOfOpen = it.getInt(it.getColumnIndex(COLUMN_COUNT_OF_OPEN))
-                val category = Category(categoryName, dailyHour, dailyMinute, weeklyHour, weeklyMinute, countOfOpen)
+                val recentOpen = it.getLong(it.getColumnIndex(COLUMN_RECENT_OPEN))
+
+                val category = Category(categoryName, dailyHour, dailyMinute, weeklyHour, weeklyMinute, recentOpen)
                 categoryNames.add(category)
 
             }
@@ -48,7 +55,6 @@ class CategoryRepository(private val context: Context) {
         return categoryNames
     }
 
-
     fun insertCategory(categoryName: String) {
         val db = dbHelper.writableDatabase
         val values = ContentValues().apply {
@@ -57,8 +63,7 @@ class CategoryRepository(private val context: Context) {
             put(COLUMN_DAILY_MINUTE, 0)
             put(COLUMN_WEEKLY_HOUR, 0)
             put(COLUMN_WEEKLY_MINUTE, 0)
-            put(COLUMN_COUNT_OF_OPEN, 0)
-
+            put(COLUMN_RECENT_OPEN, 0)
         }
         db.insert("categories", null, values)
         db.close()
@@ -67,7 +72,7 @@ class CategoryRepository(private val context: Context) {
     fun updateCategory(oldCategoryName: String, newCategoryName: String) {
         val db = dbHelper.writableDatabase
 
-        val renameTableQuery = "ALTER TABLE $oldCategoryName RENAME TO $newCategoryName"
+        val renameTableQuery = "ALTER TABLE `$oldCategoryName` RENAME TO `$newCategoryName`"
         db.execSQL(renameTableQuery)
 
         val values = ContentValues().apply {
@@ -90,12 +95,15 @@ class CategoryRepository(private val context: Context) {
         db.close()
     }
 
-    fun updateCountOfOpen(categoryName: String) {
+    fun updateRecentOpenDateTime(categoryName: String) {
         val db = dbHelper.writableDatabase
 
-        // Increment countOfOpen by 1
-        val incrementCountQuery = "UPDATE categories SET $COLUMN_COUNT_OF_OPEN = $COLUMN_COUNT_OF_OPEN + 1 WHERE $COLUMN_CATEGORY_NAME = ?"
-        db.execSQL(incrementCountQuery, arrayOf(categoryName))
+        val currentDateTime = Date().time
+
+        Log.i("updateRecentOpenDateTime", "updateRecentOpenDateTime: $currentDateTime")
+
+        val updateQuery = "UPDATE categories SET $COLUMN_RECENT_OPEN = '$currentDateTime' WHERE $COLUMN_CATEGORY_NAME = ?"
+        db.execSQL(updateQuery, arrayOf(categoryName))
 
 
         db.close()

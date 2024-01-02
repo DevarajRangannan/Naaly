@@ -16,7 +16,7 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
         const val COLUMN_DAILY_MINUTE = "dailyMinute"
         const val COLUMN_WEEKLY_HOUR = "weeklyHour"
         const val COLUMN_WEEKLY_MINUTE = "weeklyMinute"
-        const val COLUMN_COUNT_OF_OPEN = "countOfOpen"
+        const val COLUMN_RECENT_OPEN = "recentOpen"
         const val COLUMN_DATE = "date"
         const val COLUMN_TITLE = "title"
         const val COLUMN_START_HOUR = "startHour"
@@ -27,7 +27,7 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
 
 
     override fun onCreate(db: SQLiteDatabase) {
-         db.execSQL("CREATE TABLE IF NOT EXISTS categories ($COLUMN_CATEGORY_NAME TEXT PRIMARY KEY, $COLUMN_DAILY_HOUR INTEGER, $COLUMN_DAILY_MINUTE INTEGER, $COLUMN_WEEKLY_HOUR INTEGER, $COLUMN_WEEKLY_MINUTE INTEGER, $COLUMN_COUNT_OF_OPEN INTEGER)")
+         db.execSQL("CREATE TABLE IF NOT EXISTS categories ($COLUMN_CATEGORY_NAME TEXT PRIMARY KEY, $COLUMN_DAILY_HOUR INTEGER, $COLUMN_DAILY_MINUTE INTEGER, $COLUMN_WEEKLY_HOUR INTEGER, $COLUMN_WEEKLY_MINUTE INTEGER,  $COLUMN_RECENT_OPEN INTEGER)")
     }
 
     override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
