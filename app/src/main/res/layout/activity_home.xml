@@ -64,20 +64,6 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
-            android:id="@+id/mainCategoryWeeklyHourText"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="64dp"
-            android:text="0 Hours"
-            android:textAlignment="center"
-            android:textColor="#FFFFFF"
-            android:textSize="24sp"
-            android:textStyle="bold"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/linearLayout2"
-            app:layout_constraintTop_toBottomOf="@+id/mainCategoryTitleText" />
-
-        <TextView
             android:id="@+id/mainCategoryDailyHourText"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -87,20 +73,9 @@
             android:textColor="#FFFFFF"
             android:textSize="24sp"
             android:textStyle="bold"
-            app:layout_constraintEnd_toStartOf="@+id/linearLayout2"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/mainCategoryTitleText" />
-
-        <TextView
-            android:id="@+id/mainCategoryWeeklyMinuteText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="0 Minutes"
-            android:textColor="#FFFFFF"
-            android:textStyle="bold"
-            app:layout_constraintEnd_toEndOf="@+id/mainCategoryWeeklyHourText"
-            app:layout_constraintStart_toStartOf="@+id/mainCategoryWeeklyHourText"
-            app:layout_constraintTop_toBottomOf="@+id/mainCategoryWeeklyHourText" />
 
         <TextView
             android:id="@+id/mainCategoryDailyMinuteText"
@@ -112,19 +87,6 @@
             app:layout_constraintEnd_toEndOf="@+id/mainCategoryDailyHourText"
             app:layout_constraintStart_toStartOf="@+id/mainCategoryDailyHourText"
             app:layout_constraintTop_toBottomOf="@+id/mainCategoryDailyHourText" />
-
-        <LinearLayout
-            android:id="@+id/linearLayout2"
-            android:layout_width="1dp"
-            android:layout_height="58dp"
-            android:layout_marginTop="64dp"
-            android:layout_marginBottom="48dp"
-            android:background="#785C08"
-            android:orientation="vertical"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="@+id/mainCategoryTitleText"
-            app:layout_constraintStart_toStartOf="@+id/mainCategoryTitleText"
-            app:layout_constraintTop_toBottomOf="@+id/mainCategoryTitleText"></LinearLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -140,6 +102,44 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/linearLayout">
+
+        <Button
+            android:id="@+id/IncertRecordBTN"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="16dp"
+            android:background="@drawable/golden_bg"
+            android:onClick="clickProceed"
+            android:text="INCERT RECORD"
+            android:textColor="#FFFFFF"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textView" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:layout_width="393dp"
+            android:layout_height="0dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/IncertRecordBTN" />
+
+        <TextView
+            android:id="@+id/textView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="12/12/2024"
+            android:textColor="@color/gold"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

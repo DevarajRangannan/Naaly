@@ -20,8 +20,8 @@ class HomeActivity : AppCompatActivity() {
     private lateinit var categoryTitleView: TextView
     private lateinit var dailyHourView: TextView
     private lateinit var dailyMinuteView: TextView
-    private lateinit var weeklyHourView: TextView
-    private lateinit var weeklyMinuteView: TextView
+//    private lateinit var weeklyHourView: TextView
+//    private lateinit var weeklyMinuteView: TextView
 
     private lateinit var categoryTitle: String
     private var dailyHour: Int = 0
@@ -53,8 +53,8 @@ class HomeActivity : AppCompatActivity() {
         categoryTitleView = findViewById(R.id.mainCategoryTitleText)
         dailyHourView = findViewById(R.id.mainCategoryDailyHourText)
         dailyMinuteView = findViewById(R.id.mainCategoryDailyMinuteText)
-        weeklyHourView = findViewById(R.id.mainCategoryWeeklyHourText)
-        weeklyMinuteView = findViewById(R.id.mainCategoryWeeklyMinuteText)
+//        weeklyHourView = findViewById(R.id.mainCategoryWeeklyHourText)
+//        weeklyMinuteView = findViewById(R.id.mainCategoryWeeklyMinuteText)
 
         mainDisplay()
 //        categoryTitleView.text = categoryTitle
@@ -83,17 +83,17 @@ class HomeActivity : AppCompatActivity() {
             dailyMinuteView.text = "$dailyMinute Minute"
         }
 
-        if (weeklyHour > 1) {
-            weeklyHourView.text = "$weeklyHour Hours"
-        } else {
-            weeklyHourView.text = "$weeklyHour Hour"
-        }
+//        if (weeklyHour > 1) {
+//            weeklyHourView.text = "$weeklyHour Hours"
+//        } else {
+//            weeklyHourView.text = "$weeklyHour Hour"
+//        }
 
-        if (weeklyMinute > 1) {
-            weeklyMinuteView.text = "$weeklyMinute Minutes"
-        } else {
-            weeklyMinuteView.text = "$weeklyMinute Minute"
-        }
+//        if (weeklyMinute > 1) {
+//            weeklyMinuteView.text = "$weeklyMinute Minutes"
+//        } else {
+//            weeklyMinuteView.text = "$weeklyMinute Minute"
+//        }
     }
 
     private fun showPopupMenu(view: View) {
